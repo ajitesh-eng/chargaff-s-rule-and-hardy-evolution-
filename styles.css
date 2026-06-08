@@ -1,0 +1,160 @@
+/* --- Global Variables for Easy Theming --- */
+:root {
+    --primary-color: #0ea5e9; /* Tech/DNA Blue */
+    --secondary-color: #10b981; /* Biology Green */
+    --bg-color: #0f172a; /* Deep Slate */
+    --card-bg: rgba(30, 41, 59, 0.75); /* Transparent Dark for Glass Effect */
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --font-main: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    --font-data: 'Courier New', Courier, monospace; /* For numbers/data */
+}
+
+/* --- Base Body & Data Background --- */
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    line-height: 1.6;
+    
+    /* Subtle Data-Matrix Background Pattern */
+    background-image: 
+        radial-gradient(rgba(14, 165, 233, 0.15) 1px, transparent 1px),
+        radial-gradient(rgba(14, 165, 233, 0.15) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: 0 0, 20px 20px;
+    background-attachment: fixed;
+}
+
+/* --- Smooth Sections (Glassmorphism) --- */
+section {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px); /* Creates the smooth glass blur */
+    -webkit-backdrop-filter: blur(12px);
+    padding: 30px;
+    margin-bottom: 40px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* --- Headings --- */
+h2 {
+    color: var(--primary-color);
+    border-bottom: 1px solid rgba(14, 165, 233, 0.3);
+    padding-bottom: 12px;
+    margin-top: 0;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+h3 {
+    color: var(--secondary-color);
+    margin-top: 0;
+}
+
+p {
+    color: var(--text-muted);
+}
+
+/* --- Inputs & Forms --- */
+.input-group {
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: 500;
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-main);
+}
+
+input[type="number"], select {
+    width: 100%;
+    max-width: 250px;
+    padding: 10px 12px;
+    background-color: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 6px;
+    color: var(--text-main);
+    font-family: var(--font-data); /* Monospace for data */
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+input[type="number"]:focus, select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+}
+
+/* --- Smooth Buttons --- */
+button {
+    background: linear-gradient(135deg, var(--primary-color), #2563eb);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+}
+
+button:hover {
+    background: linear-gradient(135deg, #0284c7, #1d4ed8);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+/* --- Results Panel & Animations --- */
+.results {
+    margin-top: 25px;
+    padding: 20px;
+    background: rgba(16, 185, 129, 0.05); /* Soft green tint */
+    border-left: 4px solid var(--secondary-color);
+    border-radius: 6px;
+    animation: smoothFadeIn 0.5s ease forwards;
+}
+
+.results ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.results li {
+    padding: 6px 0;
+    font-family: var(--font-data);
+    font-size: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.results li:last-child {
+    border-bottom: none;
+}
+
+/* Keyframe animation for making the results appear smoothly */
+@keyframes smoothFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

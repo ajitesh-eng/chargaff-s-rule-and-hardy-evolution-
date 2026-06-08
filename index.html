@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bioinformatics Suite: Chargaff & Hardy-Weinberg</title>
+    <style>
+        /* --- Global Variables for Easy Theming --- */
+        :root {
+            --primary-color: #0ea5e9; /* Tech/DNA Blue */
+            --secondary-color: #10b981; /* Biology Green */
+            --bg-color: #0f172a; /* Deep Slate */
+            --card-bg: rgba(30, 41, 59, 0.75); /* Transparent Dark for Glass Effect */
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-main: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            --font-data: 'Courier New', Courier, monospace; /* For numbers/data */
+        }
+
+        /* --- Base Body & Data Background --- */
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            line-height: 1.6;
+            
+            /* Subtle Data-Matrix Background Pattern */
+            background-image: 
+                radial-gradient(rgba(14, 165, 233, 0.15) 1px, transparent 1px),
+                radial-gradient(rgba(14, 165, 233, 0.15) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            background-attachment: fixed;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            color: #fff;
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        /* --- Smooth Sections (Glassmorphism) --- */
+        section {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px); /* Creates the smooth glass blur */
+            -webkit-backdrop-filter: blur(12px);
+            padding: 35px;
+            margin-bottom: 40px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        /* --- Headings --- */
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 1px solid rgba(14, 165, 233, 0.3);
+            padding-bottom: 12px;
+            margin-top: 0;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            font-size: 1.3rem;
+        }
+
+        p.description {
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        /* --- Inputs & Forms --- */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: 500;
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            max-width: 280px;
+            padding: 12px;
+            background-color: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 6px;
+            color: var(--text-main);
+            font-family: var(--font-data);
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input[type="number"]:focus, select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+        }
+
+        /* --- Smooth Buttons --- */
+        button {
+            background: linear-gradient(135deg, var(--primary-color), #2563eb);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #0284c7, #1d4ed8);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        /* --- Results Panel & Animations --- */
+        .results {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(16, 185, 129, 0.05); /* Soft green tint */
+            border-left: 4px solid var(--secondary-color);
+            border-radius: 6px;
+            animation: smoothFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .results ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 15px 0 0 0;
+        }
+
+        .results li {
+            padding: 10px 0;
+            font-family: var(--font-data);
+            font-size: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .results li:last-child {
+            border-bottom: none;
+        }
+
+        .results .total-indicator {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Keyframe animation for rendering results smoothly */
+        @keyframes smoothFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Bioinformatics Toolbox - Ajitesh Seth</h1>
+        <p>Genetics & Evolutionary Logic Modules</p>
+    </header>
+
+    <section id="chargaff">
+        <h2>Chargaff's Rule Calculator</h2>
+        <p class="description">According to Chargaff's rules, double-stranded DNA maintains a 1:1 ratio of pyrimidine and purine bases. Input the percentage of any single known base to deduce the composition of the remaining three.</p>
+        
+        <div class="input-group">
+            <label for="baseType">Select Known Base</label>
+            <select id="baseType">
+                <option value="A">Adenine (A)</option>
+                <option value="T">Thymine (T)</option>
+                <option value="G">Guanine (G)</option>
+                <option value="C">Cytosine (C)</option>
+            </select>
+        </div>
+        
+        <div class="input-group">
+            <label for="basePercent">Percentage Value (%)</label>
+            <input type="number" id="basePercent" min="0" max="50" step="0.01" placeholder="e.g., 22.5">
+        </div>
+        
+        <button onclick="calculateChargaff()">Analyze Sequence</button>
+
+        <div id="chargaffResults" class="results" style="display: none;"></div>
+    </section>
+
+    <section id="evolution">
+        <h2>Evolution: Hardy-Weinberg Equilibrium</h2>
+        <p class="description">Calculate ideal allele and genotype frequencies within a non-evolving population using the Hardy-Weinberg equations: p + q = 1 and p² + 2pq + q² = 1.</p>
+        
+        <div class="input-group">
+            <label for="alleleType">Select Known Frequency Parameter</label>
+            <select id="alleleType">
+                <option value="p">Dominant Allele Frequency (p)</option>
+                <option value="q">Recessive Allele Frequency (q)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="alleleFreq">Frequency Value (Decimal between 0 and 1)</label>
+            <input type="number" id="alleleFreq" min="0" max="1" step="0.001" placeholder="e.g., 0.4">
+        </div>
+
+        <button onclick="calculateHW()">Simulate Equilibrium</button>
+
+        <div id="hwResults" class="results" style="display: none;"></div>
+    </section>
+
+    <script src="script.js">
+        // --- Chargaff's Rule Logic ---
+        function calculateChargaff() {
+            const baseType = document.getElementById("baseType").value;
+            const percent = parseFloat(document.getElementById("basePercent").value);
+            const resultsDiv = document.getElementById("chargaffResults");
+
+            if (isNaN(percent) || percent < 0 || percent > 50) {
+                alert("Error: Please enter a valid base percentage between 0% and 50%.");
+                return;
+            }
+
+            let a, t, g, c;
+
+            if (baseType === 'A' || baseType === 'T') {
+                a = t = percent;
+                g = c = (100 - (2 * percent)) / 2;
+            } else {
+                g = c = percent;
+                a = t = (100 - (2 * percent)) / 2;
+            }
+
+            // Force a slight reflow to restart animation seamlessly
+            resultsDiv.style.display = "none";
+            resultsDiv.offsetHeight; 
+            resultsDiv.style.display = "block";
+
+            resultsDiv.innerHTML = `
+                <h3>Output Sequence Metrics</h3>
+                <ul>
+                    <li><span>Adenine (A):</span> <strong>${a.toFixed(2)}%</strong></li>
+                    <li><span>Thymine (T):</span> <strong>${t.toFixed(2)}%</strong></li>
+                    <li><span>Guanine (G):</span> <strong>${g.toFixed(2)}%</strong></li>
+                    <li><span>Cytosine (C):</span> <strong>${c.toFixed(2)}%</strong></li>
+                </ul>
+                <div class="total-indicator">System validation total: ${(a + t + g + c).toFixed(0)}%</div>
+            `;
+        }
+
+        // --- Hardy-Weinberg Logic ---
+        function calculateHW() {
+            const alleleType = document.getElementById("alleleType").value;
+            const freq = parseFloat(document.getElementById("alleleFreq").value);
+            const resultsDiv = document.getElementById("hwResults");
+
+            if (isNaN(freq) || freq < 0 || freq > 1) {
+                alert("Error: Please enter an allele frequency representation between 0.0 and 1.0.");
+                return;
+            }
+
+            let p, q;
+
+            if (alleleType === 'p') {
+                p = freq;
+                q = 1 - p;
+            } else {
+                q = freq;
+                p = 1 - q;
+            }
+
+            const p2 = Math.pow(p, 2);
+            const twoPq = 2 * p * q;
+            const q2 = Math.pow(q, 2);
+
+            // Force a slight reflow to restart animation seamlessly
+            resultsDiv.style.display = "none";
+            resultsDiv.offsetHeight; 
+            resultsDiv.style.display = "block";
+
+            resultsDiv.innerHTML = `
+                <h3>Population Allelic Distribution</h3>
+                <p style="color: var(--text-main); font-weight: 600; margin-bottom: 5px;">Allele Ratios:</p>
+                <ul>
+                    <li><span>Dominant Allele (p):</span> <strong>${p.toFixed(4)}</strong></li>
+                    <li><span>Recessive Allele (q):</span> <strong>${q.toFixed(4)}</strong></li>
+                </ul>
+                <p style="color: var(--text-main); font-weight: 600; margin-top: 15px; margin-bottom: 5px;">Genotypic Frequencies:</p>
+                <ul>
+                    <li><span>Homozygous Dominant (p²):</span> <strong>${p2.toFixed(4)} (${(p2 * 100).toFixed(1)}%)</strong></li>
+                    <li><span>Heterozygous (2pq):</span> <strong>${twoPq.toFixed(4)} (${(twoPq * 100).toFixed(1)}%)</strong></li>
+                    <li><span>Homozygous Recessive (q²):</span> <strong>${q2.toFixed(4)} (${(q2 * 100).toFixed(1)}%)</strong></li>
+                </ul>
+            `;
+        }
+    </script>
+</body>
+</html>
